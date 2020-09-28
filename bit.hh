@@ -79,14 +79,16 @@ bit_constexpr int countl_zero(T x) noexcept {
         return 0;
     }
 #elif defined _MSC_VER
-    if (std::numeric_limits<T>::digits == 32) {
-        return _BitScanReverse32(x);
-    } else if (std::numeric_limits<T>::digits == 64) {
-        return _BitScanReverse64(x);
+    unsigned long out;
+    if (std::is_same<T, unsigned long>::value) {
+        _BitScanReverse(&out, x);
+    } else if (std::is_same<T, unsigned long long>::value) {
+        _BitScanReverse64(&out, x);
     } else {
-        int s = 32 - std::numeric_limits<T>::digits;
-        return _BitScanReverse32(x << s);
+        int s = std::numeric_limits<unsigned long>::digits - std::numeric_limits<T>::digits;
+        _BitScanReverse(&out, x << s);
     }
+    return out;
 #else
     int i;
     T mask = T{1} << (std::numeric_limits<T>::digits - 1);
@@ -113,13 +115,15 @@ bit_constexpr int countr_zero(T x) noexcept {
         return 0;
     }
 #elif defined _MSC_VER
-    if (std::numeric_limits<T>::digits == 32) {
-        return _BitScanForward32(x);
-    } else if (std::numeric_limits<T>::digits == 64) {
-        return _BitScanForward64(x);
+    unsigned long out;
+    if (std::is_same<T, unsigned long>::value) {
+        _BitScanForward(&out, x);
+    } else if (std::is_same<T, unsigned long long>::value) {
+        _BitScanForward64(&out, x);
     } else {
-        return _BitScanForward32(x);
+        _BitScanForward(&out, x);
     }
+    return out;
 #else
     int i;
     for (i = 0; (x & 1) == 0; x >>= 1, i++);
