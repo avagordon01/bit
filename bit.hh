@@ -9,9 +9,15 @@ namespace bit {
 
 namespace {
 #if __cplusplus >= 201703L
-#define no_discard [[nodiscard]]
+#define bit_nodiscard [[nodiscard]]
 #else
-#define no_discard
+#define bit_nodiscard
+#endif
+
+#if __cplusplus >= 201402L
+#define bit_constexpr constexpr
+#else
+#define bit_constexpr
 #endif
 }
 
@@ -28,11 +34,11 @@ enum class endian {
 };
 
 template<class T>
-constexpr bool has_single_bit(T x) noexcept {
+bit_constexpr bool has_single_bit(T x) noexcept {
     return popcount(x) == 1;
 }
 template<class T>
-constexpr T bit_ceil(T x) {
+bit_constexpr T bit_ceil(T x) {
     if (x == ~T{0}) {
         return 0;
     } else if (has_single_bit(x)) {
@@ -42,7 +48,7 @@ constexpr T bit_ceil(T x) {
     }
 }
 template<class T>
-constexpr T bit_floor(T x) noexcept {
+bit_constexpr T bit_floor(T x) noexcept {
     if (x != 0) {
         return T{1} << (bit_width(x) - 1);
     } else {
@@ -50,12 +56,12 @@ constexpr T bit_floor(T x) noexcept {
     }
 }
 template<class T>
-constexpr T bit_width(T x) noexcept {
+bit_constexpr T bit_width(T x) noexcept {
     return std::numeric_limits<T>::digits - countl_zero(x);
 }
 template<class T>
-no_discard
-constexpr T rotl(T x, int s) noexcept {
+bit_nodiscard
+bit_constexpr T rotl(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
     if (s == 0) {
         return x;
@@ -66,8 +72,8 @@ constexpr T rotl(T x, int s) noexcept {
     }
 }
 template<class T>
-no_discard
-constexpr T rotr(T x, int s) noexcept {
+bit_nodiscard
+bit_constexpr T rotr(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
     if (s == 0) {
         return x;
@@ -78,7 +84,7 @@ constexpr T rotr(T x, int s) noexcept {
     }
 }
 template<class T>
-constexpr int countl_zero(T x) noexcept {
+bit_constexpr int countl_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
         return __builtin_clzll(x);
@@ -95,11 +101,11 @@ constexpr int countl_zero(T x) noexcept {
 #endif
 }
 template<class T>
-constexpr int countl_one(T x) noexcept {
+bit_constexpr int countl_one(T x) noexcept {
     return countl_zero(~x);
 }
 template<class T>
-constexpr int countr_zero(T x) noexcept {
+bit_constexpr int countr_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
         return __builtin_ctzll(x);
@@ -115,11 +121,11 @@ constexpr int countr_zero(T x) noexcept {
 #endif
 }
 template<class T>
-constexpr int countr_one(T x) noexcept {
+bit_constexpr int countr_one(T x) noexcept {
     return countl_one(~x);
 }
 template<class T>
-constexpr int popcount(T x) noexcept {
+bit_constexpr int popcount(T x) noexcept {
 #if defined __GNUC__
     return __builtin_popcountll(x);
 #else

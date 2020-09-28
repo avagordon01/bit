@@ -17,8 +17,8 @@ types = [
   'uint64_t',
 ]
 cpp_versions = [
-  #'c++11',
-  #'c++14',
+  'c++11',
+  'c++14',
   'c++17',
 ]
 foreach cpp_version : cpp_versions
