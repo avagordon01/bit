@@ -154,7 +154,7 @@ bit_constexpr int countr_zero(T x) noexcept {
 }
 template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int countr_one(T x) noexcept {
-    return countl_one(~x);
+    return countr_zero(~x);
 }
 template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int popcount(T x) noexcept {
