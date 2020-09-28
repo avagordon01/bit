@@ -11,9 +11,9 @@ project('bit', 'cpp',
 gtest = subproject('gtest').get_variable('gtest_main_dep')
 
 types = [
-  #'uint8_t',
-  #'uint16_t',
-  #'uint32_t',
+  'uint8_t',
+  'uint16_t',
+  'uint32_t',
   'uint64_t',
 ]
 cpp_versions = [

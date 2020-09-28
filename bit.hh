@@ -4,6 +4,7 @@
 #include <intrin.h>
 #endif
 #include <limits>
+#include <type_traits>
 
 namespace bit {
 
@@ -87,12 +88,28 @@ template<class T>
 bit_constexpr int countl_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
-        return __builtin_clzll(x);
+        if (std::is_same<T, unsigned>::value) {
+            return __builtin_clz(x);
+        } else if (std::is_same<T, unsigned long>::value) {
+            return __builtin_clzl(x);
+        } else if (std::is_same<T, unsigned long long>::value) {
+            return __builtin_clzll(x);
+        } else {
+            int s = std::numeric_limits<unsigned>::digits - std::numeric_limits<T>::digits;
+            return __builtin_clz(x << s);
+        }
     } else {
         return 0;
     }
 #elif defined _MSC_VER
-    return _BitScanReverse64(x);
+    if (std::numeric_limits<T>::digits == 32) {
+        return _BitScanReverse32(x);
+    } else if (std::numeric_limits<T>::digits == 64) {
+        return _BitScanReverse64(x);
+    } else {
+        int s = 32 - std::numeric_limits<T>::digits;
+        return _BitScanReverse32(x << s);
+    }
 #else
     int i;
     T mask = T{1} << (std::numeric_limits<T>::digits - 1);
@@ -108,12 +125,24 @@ template<class T>
 bit_constexpr int countr_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
-        return __builtin_ctzll(x);
+        if (std::is_same<T, unsigned long long>::value) {
+            return __builtin_ctzll(x);
+        } else if (std::is_same<T, unsigned long>::value) {
+            return __builtin_ctzl(x);
+        } else {
+            return __builtin_ctz(x);
+        }
     } else {
         return 0;
     }
 #elif defined _MSC_VER
-    return _BitScanForward64(x);
+    if (std::numeric_limits<T>::digits == 32) {
+        return _BitScanForward32(x);
+    } else if (std::numeric_limits<T>::digits == 64) {
+        return _BitScanForward64(x);
+    } else {
+        return _BitScanForward32(x);
+    }
 #else
     int i;
     for (i = 0; (x & 1) == 0; x >>= 1, i++);
