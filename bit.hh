@@ -20,6 +20,9 @@ namespace {
 #else
 #define bit_constexpr
 #endif
+
+template<bool B, class T = void>
+using enable_if_t = typename std::enable_if<B,T>::type;
 }
 
 enum class endian {
@@ -34,11 +37,11 @@ enum class endian {
 #endif
 };
 
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr bool has_single_bit(T x) noexcept {
     return popcount(x) == 1;
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr T bit_ceil(T x) {
     if (x == ~T{0}) {
         return 0;
@@ -48,7 +51,7 @@ bit_constexpr T bit_ceil(T x) {
         return T{1} << bit_width(x);
     }
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr T bit_floor(T x) noexcept {
     if (x != 0) {
         return T{1} << (bit_width(x) - 1);
@@ -56,11 +59,11 @@ bit_constexpr T bit_floor(T x) noexcept {
         return 0;
     }
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr T bit_width(T x) noexcept {
     return std::numeric_limits<T>::digits - countl_zero(x);
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotl(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
@@ -72,7 +75,7 @@ bit_constexpr T rotl(T x, int s) noexcept {
         return (x >> -r) | (x << (std::numeric_limits<T>::digits + r));
     }
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotr(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
@@ -84,7 +87,7 @@ bit_constexpr T rotr(T x, int s) noexcept {
         return (x << -r) | (x >> (std::numeric_limits<T>::digits + r));
     }
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int countl_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
@@ -117,11 +120,11 @@ bit_constexpr int countl_zero(T x) noexcept {
     return i;
 #endif
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int countl_one(T x) noexcept {
     return countl_zero(~x);
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int countr_zero(T x) noexcept {
 #if defined __GNUC__
     if (x != 0) {
@@ -149,11 +152,11 @@ bit_constexpr int countr_zero(T x) noexcept {
     return i;
 #endif
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int countr_one(T x) noexcept {
     return countl_one(~x);
 }
-template<class T>
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_constexpr int popcount(T x) noexcept {
 #if defined __GNUC__
     return __builtin_popcountll(x);
