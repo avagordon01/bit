@@ -38,32 +38,6 @@ enum class endian {
 };
 
 template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
-bit_constexpr bool has_single_bit(T x) noexcept {
-    return popcount(x) == 1;
-}
-template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
-bit_constexpr T bit_ceil(T x) {
-    if (x == ~T{0}) {
-        return 0;
-    } else if (has_single_bit(x)) {
-        return x;
-    } else {
-        return T{1} << bit_width(x);
-    }
-}
-template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
-bit_constexpr T bit_floor(T x) noexcept {
-    if (x != 0) {
-        return T{1} << (bit_width(x) - 1);
-    } else {
-        return 0;
-    }
-}
-template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
-bit_constexpr T bit_width(T x) noexcept {
-    return std::numeric_limits<T>::digits - countl_zero(x);
-}
-template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotl(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
@@ -168,6 +142,32 @@ bit_constexpr int popcount(T x) noexcept {
     }
     return c;
 #endif
+}
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
+bit_constexpr bool has_single_bit(T x) noexcept {
+    return popcount(x) == 1;
+}
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
+bit_constexpr T bit_width(T x) noexcept {
+    return std::numeric_limits<T>::digits - countl_zero(x);
+}
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
+bit_constexpr T bit_ceil(T x) {
+    if (x == ~T{0}) {
+        return 0;
+    } else if (has_single_bit(x)) {
+        return x;
+    } else {
+        return T{1} << bit_width(x);
+    }
+}
+template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
+bit_constexpr T bit_floor(T x) noexcept {
+    if (x != 0) {
+        return T{1} << (bit_width(x) - 1);
+    } else {
+        return 0;
+    }
 }
 
 }
