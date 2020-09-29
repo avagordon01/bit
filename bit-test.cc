@@ -24,15 +24,13 @@ using T = TYPE;
 using T = unsigned long long;
 #endif
 
-TEST(bit, fuzz_count){
+TEST(bit, count){
     constexpr size_t len = std::numeric_limits<T>::digits;
-    std::uniform_int_distribution<size_t> set_distribution(0, len - 1);
-    for(size_t i = 0; i < num_trials; i++) {
+    for (size_t i = 0; i < len; i++) {
         std::bitset<len> b;
-        size_t pos = set_distribution(engine);
-        b.set(pos);
+        b.set(i);
         T x = b.to_ullong();
-        ASSERT_EQ(bit::countl_zero(x), len - 1 - pos);
-        ASSERT_EQ(bit::countr_zero(x), pos);
+        ASSERT_EQ(bit::countl_zero(x), len - 1 - i);
+        ASSERT_EQ(bit::countr_zero(x), i);
     }
 }
