@@ -34,3 +34,19 @@ TEST(bit, count){
         ASSERT_EQ(bit::countr_zero(x), i);
     }
 }
+
+TEST(bit, rotate){
+    constexpr size_t len = std::numeric_limits<T>::digits;
+    std::uniform_int_distribution<size_t> shift_distribution(1024, -1024);
+    for (size_t i = 0; i < num_trials; i++) {
+        std::bitset<len> b {input_distribution(engine)};
+        int s = shift_distribution(engine);
+        T x = b.to_ullong();
+        ASSERT_EQ(x, bit::rotl(bit::rotr(x, s), s));
+        T y = bit::rotl(x, s);
+        std::bitset<len> b2 {y};
+        for (size_t i = 0; i < len; i++) {
+            ASSERT_EQ(b.test(i), b2.test((i + s) % len));
+        }
+    }
+}
