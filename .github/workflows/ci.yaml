@@ -1,0 +1,16 @@
+name: ci
+on: push
+jobs:
+  ci:
+    name: run ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo apt install meson
+      - name: run tests
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./test.sh
