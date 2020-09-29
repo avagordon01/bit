@@ -5,6 +5,7 @@
 #endif
 #include <limits>
 #include <type_traits>
+#include <cstring>
 
 namespace bit {
 
@@ -37,6 +38,17 @@ enum class endian {
 #endif
 };
 
+template <class To, class From, typename = enable_if_t<
+    sizeof(To) == sizeof(From) &&
+    std::is_trivially_copyable<From>::value &&
+    std::is_trivially_copyable<To>::value &&
+    std::is_trivially_constructible<To>::value,
+    To>>
+To bit_cast(const From& src) noexcept {
+    To dst;
+    std::memcpy(&dst, &src, sizeof(To));
+    return dst;
+}
 template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotl(T x, int s) noexcept {
