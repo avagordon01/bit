@@ -41,9 +41,9 @@ template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotl(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
-    if (s == 0) {
+    if (r == 0) {
         return x;
-    } else if (s > 0) {
+    } else if (r > 0) {
         return (x << r) | (x >> (std::numeric_limits<T>::digits - r));
     } else {
         return (x >> -r) | (x << (std::numeric_limits<T>::digits + r));
@@ -53,9 +53,9 @@ template<class T, typename = enable_if_t<!std::numeric_limits<T>::is_signed>>
 bit_nodiscard
 bit_constexpr T rotr(T x, int s) noexcept {
     int r = s % std::numeric_limits<T>::digits;
-    if (s == 0) {
+    if (r == 0) {
         return x;
-    } else if (s > 0) {
+    } else if (r > 0) {
         return (x >> r) | (x << (std::numeric_limits<T>::digits - r));
     } else {
         return (x << -r) | (x >> (std::numeric_limits<T>::digits + r));
